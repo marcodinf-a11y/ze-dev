@@ -1,6 +1,6 @@
 Type: wayfinder:prototype
-Status: open
-Blocked by: 01
+Status: resolved
+Canonical decision: [Prototype the core decision loop](https://github.com/marcodinf-a11y/ze-dev/issues/3#issuecomment-6096364441)
 
 ## Question
 

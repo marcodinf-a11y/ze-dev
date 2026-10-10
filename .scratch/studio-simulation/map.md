@@ -22,6 +22,8 @@ A reviewable blueprint for a historical game development studio economy simulati
 - [Research historical market milestones](https://github.com/marcodinf-a11y/ze-dev/issues/4): 1950 is an exhibition and research phase; later hardware and distribution changes overlap rather than replacing one another all at once.
 - [Define player role and campaign goal](https://github.com/marcodinf-a11y/ze-dev/issues/2#issuecomment-6095827924): inventor opening, creative and business direction, legacy across studio runs, optional succession, and separate sandbox mode; continuation leadership and character balance need later exploration.
 
+- [Prototype the core decision loop](https://github.com/marcodinf-a11y/ze-dev/issues/3#issuecomment-6096364441): continuous time, milestone and discovery reviews, self-funded or commissioned opening projects, feedback after delivery, and parallel projects as the studio grows.
+
 ## Not yet specified
 
 - How deep the economic model should run within each era once the desired player experience and time scale are settled.
