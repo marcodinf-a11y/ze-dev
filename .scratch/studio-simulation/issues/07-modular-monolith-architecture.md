@@ -1,6 +1,6 @@
 Type: wayfinder:grilling
 Status: open
-Blocked by: 02, 05, 06
+Blocked by: 02, 05, 06, 12, 13
 
 ## Question
 
