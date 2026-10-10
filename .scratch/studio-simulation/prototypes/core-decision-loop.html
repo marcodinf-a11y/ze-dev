@@ -8,7 +8,7 @@ body{font:17px/1.55 system-ui,sans-serif;max-width:1000px;margin:40px auto;paddi
 </style>
 <h1>Feel the studio decision loop</h1>
 <p class="notice"><strong>Throwaway planning prototype.</strong> Does choosing a project, committing resources, reviewing work, delivering it, and funding the next project create a satisfying cycle in both eras? Open this file directly; nothing is saved.</p>
-<p>Agreed so far: continuous time with pause and speed controls; automatic pauses for major decisions; project reviews allow redirection; early experiments can be self-funded or commissioned.</p>
+<p>Agreed so far: continuous time with pause and speed controls; automatic pauses for major decisions; project reviews allow redirection; early experiments can be self-funded or commissioned. Reviews come from planned milestones and emerging discoveries or threats. Reception and funding unfold after delivery while new work can begin. Growing studios can run parallel projects sharing people and money.</p>
 <p><small>All figures, durations, review triggers, outcomes, and action limits below are illustrative assumptions for discussion. A week takes one second at normal speed. Historical events, economic balance, recovery rules, and campaign scoring are outside this demo.</small></p>
 <section><h2>Current situation</h2><div id="state" aria-live="polite"></div></section>
 <section><h2>Explore freely</h2>
@@ -21,10 +21,10 @@ body{font:17px/1.55 system-ui,sans-serif;max-width:1000px;margin:40px auto;paddi
 <p id="effect" aria-live="polite"></p></section>
 <section><h2>Guided walkthroughs</h2><div id="tabs"></div><p id="scenario"></p><div id="steps"></div></section>
 <section><h2>What happened</h2><ol id="history"></ol></section>
-<section><h2>Decisions still open</h2><ul>
-<li>Should reviews arise from discoveries and threats, planned milestones, or both?</li>
-<li>Should delivery create delayed feedback while the next project proceeds?</li>
-<li>Should several projects be possible as the studio grows?</li>
+<section><h2>Limits of this walkthrough</h2><ul>
+<li>Both milestone and discovery reviews are agreed. The specific weeks shown here are placeholders.</li>
+<li>Feedback after delivery is agreed. Its timing and economic formulas belong to later decisions.</li>
+<li>Parallel projects sharing people and money are agreed for studio growth. This walkthrough isolates one active project; it does not simulate staff allocation.</li>
 </ul><p>Watch the awkward moments: cutting a commission can break its promise; postponing delivery consumes the resources for the next project; starting again before reception arrives means deciding with incomplete knowledge.</p></section>
 <script id="demo-data" type="application/json">
 {"opening":{"name":"1950 exhibition/research opening","project":"Experimental demonstration","cash":36,"advance":14,"cost":4,"costAfterCut":3,"duration":6,"reviewAt":3,"reward":20,"delay":2},"market":{"name":"Commercial market","project":"Commercial game","cash":44,"advance":14,"cost":5,"costAfterCut":4,"duration":6,"reviewAt":3,"reward":26,"delay":2}}
@@ -38,7 +38,7 @@ function reduce(input,action){
  if(action==='pause'){s.paused=true;say('Time paused.');return s;}
  if(action==='play'){if(s.project?.review||s.cash<=0){say('Resolve the project review or funding pressure first.');return s;}s.paused=false;say('Time running.');return s;}
  if(action==='self'||action==='commission'){
-  if(s.project){say('This small demo supports one active project. Parallel projects remain an open decision.');return s;}
+  if(s.project){say('This walkthrough isolates one active project. The agreed design allows parallel projects as the studio grows.');return s;}
   if(s.cash<=0){say('Funding pressure needs a recovery decision; recovery is not simulated here.');return s;}
   s.project={funding:action,work:0,target:d.duration,cut:false,quality:0,review:false,reviewed:false,cost:d.cost};
   if(action==='commission')s.cash+=d.advance;
@@ -60,7 +60,7 @@ function reduce(input,action){
  }
  const p=s.project;if(!p){say('There is no active project.');return s;}
  if(action==='cancel'){s.project=null;s.paused=true;say('Project cancelled. Money already spent is not restored; commission consequences remain outside this demo.');return s;}
- if(!p.review){say('Reach a review before changing this project or delivering. Delivery timing is an assumption to discuss.');return s;}
+ if(!p.review){say('Reach a review before changing this project or delivering. This walkthrough only demonstrates delivery at reviews; it does not define all legal delivery times.');return s;}
  if(action==='cut'){
   if(p.cut){say('This prototype allows one scope cut.');return s;}
   p.cut=true;p.cost=d.costAfterCut;p.target=p.work+1;p.quality=1;p.review=false;p.reviewed=true;
