@@ -1,6 +1,7 @@
 Type: wayfinder:grilling
 Status: open
 Blocked by: 02, 05
+GitHub issue: https://github.com/marcodinf-a11y/ze-dev/issues/10
 
 ## Question
 

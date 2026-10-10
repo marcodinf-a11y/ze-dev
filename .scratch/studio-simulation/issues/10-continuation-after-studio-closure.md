@@ -1,6 +1,7 @@
 Type: wayfinder:prototype
 Status: open
 Blocked by: 05
+GitHub issue: https://github.com/marcodinf-a11y/ze-dev/issues/11
 
 ## Question
 

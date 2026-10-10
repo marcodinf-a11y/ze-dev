@@ -1,5 +1,6 @@
 Type: wayfinder:grilling
 Status: resolved
+GitHub issue: https://github.com/marcodinf-a11y/ze-dev/issues/2
 
 ## Question
 
