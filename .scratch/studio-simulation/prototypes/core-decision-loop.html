@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studio decision loop — planning prototype</title>
+<style>
+body{font:17px/1.55 system-ui,sans-serif;max-width:1000px;margin:40px auto;padding:0 22px;background:#f6f5f1;color:#242d31}h1,h2{line-height:1.2}section{background:white;padding:22px;margin:20px 0;border:1px solid #ddd;border-radius:9px}button,select{font:inherit;padding:8px 12px;margin:4px;border:1px solid #b7c3c1;border-radius:5px;background:#fff;color:#164d46;cursor:pointer}button:disabled{opacity:.45;cursor:default}.selected{background:#164d46;color:white}dl{display:grid;grid-template-columns:180px 1fr;gap:8px}dd{margin:0}small{color:#5b6365}.notice{border-left:4px solid #287f70;padding-left:16px}li{margin-bottom:7px}#history{max-height:240px;overflow:auto}
+</style>
+<h1>Feel the studio decision loop</h1>
+<p class="notice"><strong>Throwaway planning prototype.</strong> Does choosing a project, committing resources, reviewing work, delivering it, and funding the next project create a satisfying cycle in both eras? Open this file directly; nothing is saved.</p>
+<p>Agreed so far: continuous time with pause and speed controls; automatic pauses for major decisions; project reviews allow redirection; early experiments can be self-funded or commissioned.</p>
+<p><small>All figures, durations, review triggers, outcomes, and action limits below are illustrative assumptions for discussion. A week takes one second at normal speed. Historical events, economic balance, recovery rules, and campaign scoring are outside this demo.</small></p>
+<section><h2>Current situation</h2><div id="state" aria-live="polite"></div></section>
+<section><h2>Explore freely</h2>
+<label>Era <select id="era"><option value="opening">1950 · experimental demonstration</option><option value="market">Commercial game market</option></select></label>
+<button id="reset">Reset era</button><br>
+<button data-action="self">Start a self-funded project</button><button data-action="commission">Accept commissioned work</button><br>
+<button data-action="play">Resume time</button><button data-action="pause">Pause</button><button data-action="tick">Advance one week</button>
+<label>Speed <select id="speed"><option value="1">Normal</option><option value="3">Fast</option></select></label><br>
+<button data-action="cut">Cut scope</button><button data-action="extend">Invest more time</button><button data-action="deliver">Deliver now</button><button data-action="cancel">Cancel project</button>
+<p id="effect" aria-live="polite"></p></section>
+<section><h2>Guided walkthroughs</h2><div id="tabs"></div><p id="scenario"></p><div id="steps"></div></section>
+<section><h2>What happened</h2><ol id="history"></ol></section>
+<section><h2>Decisions still open</h2><ul>
+<li>Should reviews arise from discoveries and threats, planned milestones, or both?</li>
+<li>Should delivery create delayed feedback while the next project proceeds?</li>
+<li>Should several projects be possible as the studio grows?</li>
+</ul><p>Watch the awkward moments: cutting a commission can break its promise; postponing delivery consumes the resources for the next project; starting again before reception arrives means deciding with incomplete knowledge.</p></section>
+<script id="demo-data" type="application/json">
+{"opening":{"name":"1950 exhibition/research opening","project":"Experimental demonstration","cash":36,"advance":14,"cost":4,"costAfterCut":3,"duration":6,"reviewAt":3,"reward":20,"delay":2},"market":{"name":"Commercial market","project":"Commercial game","cash":44,"advance":14,"cost":5,"costAfterCut":4,"duration":6,"reviewAt":3,"reward":26,"delay":2}}
+</script>
+<script>
+const data=JSON.parse(document.getElementById('demo-data').textContent);
+function initial(era){return {era,week:0,cash:data[era].cash,expertise:0,reputation:0,project:null,pending:[],delivered:0,paused:true,notice:'Choose a project and how to fund it.',history:[]};}
+function reduce(input,action){
+ const s=structuredClone(input),d=data[s.era];
+ const say=text=>{s.notice=text;s.history.push('Week '+s.week+': '+text);};
+ if(action==='pause'){s.paused=true;say('Time paused.');return s;}
+ if(action==='play'){if(s.project?.review||s.cash<=0){say('Resolve the project review or funding pressure first.');return s;}s.paused=false;say('Time running.');return s;}
+ if(action==='self'||action==='commission'){
+  if(s.project){say('This small demo supports one active project. Parallel projects remain an open decision.');return s;}
+  if(s.cash<=0){say('Funding pressure needs a recovery decision; recovery is not simulated here.');return s;}
+  s.project={funding:action,work:0,target:d.duration,cut:false,quality:0,review:false,reviewed:false,cost:d.cost};
+  if(action==='commission')s.cash+=d.advance;
+  say(action==='self'?'Self-funded project committed: creative freedom, no guaranteed payment.':'Commission committed: advance received; the promised scope matters.');return s;
+ }
+ if(action==='tick'){
+  if(s.project?.review){say('Review paused time. Choose how to respond before advancing.');return s;}
+  if(s.cash<=0){say('Funding pressure paused time. Recovery mechanics belong to a later decision.');return s;}
+  s.week++;
+  const arrived=s.pending.filter(p=>p.due<=s.week);s.pending=s.pending.filter(p=>p.due>s.week);
+  for(const p of arrived){s.cash+=p.cash;s.reputation+=p.reputation;say(p.text+' Funding +'+p.cash+'; reputation '+(p.reputation>=0?'+':'')+p.reputation+'.');}
+  if(s.project){const p=s.project;s.cash-=p.cost;p.work++;
+   if(p.work===d.reviewAt&&!p.reviewed){p.review=true;s.paused=true;say(s.era==='opening'?'Review: the machine is unreliable. Simplify, invest more time, or demonstrate it as it stands.':'Review: playtesting shows the experience is weak. Cut scope, invest more time, or release as it stands.');}
+   else if(p.work>=p.target){p.review=true;s.paused=true;say('Planned delivery point reached. Deliver, revise the plan, or cancel.');}
+   else say('Work advanced; resources were spent.');
+  }else if(!arrived.length)say('Time advanced without an active project. This demo omits studio overhead.');
+  if(s.cash<=0){s.paused=true;say('Funding exhausted: automatic pause. Recovery and closure rules are not decided by this demo.');}
+  return s;
+ }
+ const p=s.project;if(!p){say('There is no active project.');return s;}
+ if(action==='cancel'){s.project=null;s.paused=true;say('Project cancelled. Money already spent is not restored; commission consequences remain outside this demo.');return s;}
+ if(!p.review){say('Reach a review before changing this project or delivering. Delivery timing is an assumption to discuss.');return s;}
+ if(action==='cut'){
+  if(p.cut){say('This prototype allows one scope cut.');return s;}
+  p.cut=true;p.cost=d.costAfterCut;p.target=p.work+1;p.quality=1;p.review=false;p.reviewed=true;
+  say('Scope reduced. One more week remains; a commission will no longer meet its original promise.');return s;
+ }
+ if(action==='extend'){p.target=Math.max(p.target,p.work+2);p.quality=2;p.review=false;p.reviewed=true;say('More time committed to improving the project. Each week still costs money.');return s;}
+ if(action==='deliver'){
+  const meetsPromise=p.funding!=='commission'||(!p.cut&&p.quality>0);
+  const good=p.quality>0;s.expertise+=good?2:1;s.delivered++;s.paused=true;s.project=null;
+  const amount=p.funding==='commission'?(meetsPromise?d.reward:0):(good?d.reward:5);
+  s.pending.push({due:s.week+d.delay,cash:amount,reputation:good&&meetsPromise?2:-1,text:s.era==='opening'?(good&&meetsPromise?'The demonstration attracts support.':'The demonstration receives a disappointing response.'):(good&&meetsPromise?'Players respond well; the game earns income.':'The release disappoints; income is limited.')});
+  say('Delivered. Expertise gained immediately; reception and further funding arrive in '+d.delay+' weeks. You can plan the next project now.');return s;
+ }
+ return s;
+}
+const scenarios=[
+ {name:'Opening · improve it',era:'opening',text:'Spend more time on a self-funded demonstration. Deliver, then decide whether to start another experiment before support arrives.',actions:['self','tick','tick','tick','extend','tick','tick','tick','deliver','self','tick','tick']},
+ {name:'Opening · break a promise',era:'opening',text:'Take an advance, then simplify the commissioned demonstration. Expertise can grow even when the promised outcome is missed.',actions:['commission','tick','tick','tick','cut','tick','deliver','tick','tick']},
+ {name:'Market · release early',era:'market',text:'Release at the first disappointing playtest. Observe the delay between delivery, reception, and income.',actions:['self','tick','tick','tick','deliver','self','tick','tick']},
+ {name:'Market · money runs out',era:'market',text:'Keep postponing delivery. Time costs resources; automatic pause exposes the need for a recovery decision.',actions:['self','tick','tick','tick','extend','tick','tick','tick','extend','tick','tick','extend','tick']},
+ {name:'Try an invalid action',era:'opening',text:'Try delivering without a project, starting a second project, and advancing through an unresolved review.',actions:['deliver','self','commission','tick','tick','tick','tick']}
+];
+let state=initial('opening'),selected=-1,step=0;
+function render(){const p=state.project,d=data[state.era];
+ const fields=[['Era',d.name],['Time','Week '+state.week+' · '+(state.paused?'paused':'running')],['Available funds',state.cash+' illustrative units'],['Expertise',state.expertise],['Reputation',state.reputation],['Project',p?d.project+' · '+(p.funding==='self'?'self-funded':'commissioned'):'None'],['Work',p?p.work+' / '+p.target+' weeks; '+p.cost+' funds per week':'—'],['Project priorities',p?(p.cut?'Reduced scope':p.quality===2?'Investing in improvement':'Original scope'):'—'],['Review',p?.review?'Decision required':'None'],['Deliveries',state.delivered],['Awaiting feedback',state.pending.length?state.pending.map(x=>'Due in week '+x.due).join('; '):'None']];
+ document.getElementById('state').innerHTML='<dl>'+fields.map(([k,v])=>'<dt>'+k+'</dt><dd>'+v+'</dd>').join('')+'</dl>';
+ document.getElementById('effect').textContent=state.notice;
+ const log=document.getElementById('history');log.replaceChildren(...state.history.map(x=>{const li=document.createElement('li');li.textContent=x;return li;}));log.scrollTop=log.scrollHeight;
+ document.getElementById('era').value=state.era;
+ document.getElementById('tabs').replaceChildren(...scenarios.map((x,i)=>{const b=document.createElement('button');b.textContent=x.name;b.className=i===selected?'selected':'';b.onclick=()=>{selected=i;step=0;state=initial(x.era);render();};return b;}));
+ const sc=scenarios[selected];document.getElementById('scenario').textContent=sc?sc.text:'Choose a walkthrough. Each starts from a fresh state; use its steps in order.';
+ document.getElementById('steps').replaceChildren(...(sc?sc.actions.map((a,i)=>{const b=document.createElement('button');b.textContent=(i+1)+'. '+({self:'Self-fund',commission:'Accept commission',tick:'Advance a week',extend:'Invest more time',cut:'Cut scope',deliver:'Deliver now'}[a]||a);b.disabled=i!==step;b.onclick=()=>{state=reduce(state,a);step++;render();};return b;}):[]));
+}
+function dispatch(a){selected=-1;state=reduce(state,a);render();}
+document.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>dispatch(b.dataset.action));
+document.getElementById('reset').onclick=()=>{selected=-1;state=initial(document.getElementById('era').value);render();};
+document.getElementById('era').onchange=document.getElementById('reset').onclick;
+setInterval(()=>{if(!state.paused){for(let i=0;i<Number(document.getElementById('speed').value)&&!state.paused;i++)state=reduce(state,'tick');render();}},1000);
+render();
+</script>
+</html>
