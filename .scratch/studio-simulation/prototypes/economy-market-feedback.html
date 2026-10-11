@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Studio economy — disposable planning prototype</title>
+<style>
+  * { box-sizing: border-box } body { margin: 0 auto; padding: 28px; max-width: 1200px; font: 16px/1.5 system-ui; background: #f6f5f1; color: #242d29 }
+  h1,h2,h3,p { margin: 0 0 12px } h1 { font-size: 29px } h2 { font-size: 20px } h3 { font-size: 17px }
+  button,select { font: inherit; padding: 8px 12px; border: 1px solid #8b9c93; border-radius: 5px; background: white; color: inherit }
+  button { cursor: pointer; margin: 3px } button:disabled { opacity: .45; cursor: default } button[aria-selected=true],.primary { background: #185b44; color: white }
+  button:focus-visible,select:focus-visible { outline: 3px solid #db9200; outline-offset: 2px }
+  section,.card { padding: 18px; background: white; border: 1px solid #d3d8d2; border-radius: 7px; margin: 16px 0 }
+  .grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px } .card { margin: 0 } dl { margin: 0 } dt { font-size: 13px; color: #58635d } dd { margin: 0 0 9px; font-weight: 600 }
+  .note { color: #58635d; font-size: 14px } .warning { color: #8b3418 } .scroll { overflow: auto } table { width: 100%; border-collapse: collapse; font-size: 14px } th,td { padding: 7px; text-align: left; border-bottom: 1px solid #ddd; white-space: nowrap }
+  #notice { min-height: 26px; font-weight: 600 } #log { max-height: 230px; overflow: auto } #log p { margin-bottom: 8px } details { margin-top: 16px }
+  @media(max-width:800px) { body { padding: 14px } .grid { grid-template-columns: 1fr } }
+</style>
+<header>
+  <p class="note">DISPOSABLE PROTOTYPE · Planning only · No saved state</p>
+  <h1>Can acclaim pay for the next project?</h1>
+  <p>Compare an opening exhibition demonstration, a later game release, and a hardware launch. Can cash timing, finite capacity, agreements, and distinct audiences explain success and failure without a single success score?</p>
+  <p class="note">All figures are invented cash units and work units. Each “period” samples continuous time; it is not a chosen calendar scale. Scenarios are isolated studios, not a campaign timeline. Numbers, formulas, and deterministic outcomes are discussion props, not approved game rules.</p>
+</header>
+<section>
+  <h2>Choose a comparison</h2>
+  <div role="tablist" aria-label="Economic scenarios" id="tabs"></div>
+  <p id="scenario"></p>
+  <label>Guided walkthrough <select id="walkthrough"></select></label>
+  <button id="start">Start walkthrough / reset</button><button id="next" class="primary">Next guided action</button>
+  <p id="guide" class="note"></p>
+</section>
+<p id="notice" role="status" aria-live="polite"></p>
+<div class="grid" id="state"></div>
+<section>
+  <h2>Free play</h2>
+  <p class="note">Choices happen while paused. Advance one period to see ongoing work, collections, manufacturing, sales, and support compete. An inability to pay prompts a review; this demo chooses no bankruptcy or recovery rule.</p>
+  <div id="actions"></div>
+</section>
+<section>
+  <h2>Market and reception</h2><div id="market"></div>
+</section>
+<section>
+  <h2>Cash movement and capacity</h2><div class="scroll" id="ledger"></div>
+</section>
+<section><h2>What changed and why</h2><div id="log"></div></section>
+<details open><summary>Explicit assumptions and deliberate omissions</summary>
+  <ul>
+    <li>People have finite time; equipment caps development throughput separately. Wages and facility costs continue even when people are idle. Support, platform operation, manufacturing, and a next project draw on the same time.</li>
+    <li>Development progress, craft, reliability, and audience fit are distinct. Extra polish needs extra work; cutting a commissioned scope requires client agreement.</li>
+    <li>An exhibition has visitors, public attention, and client acceptance, but no consumer unit sales. Self-funded attention makes future opportunities visible without issuing free money.</li>
+    <li>The commission pays 25 on signing, 15 at a development milestone, and 40 one period after acceptance. Deadline 6, reliability at least 60. Renegotiation extends the deadline by 2, reduces work by 1, and reduces final payment by 10. Cancellation returns unearned funding; this is an illustrative agreement.</li>
+    <li>A publisher offers 60 upfront, greater reach, and a studio royalty of 0.8 per game unit against a price of 2. The advance is recouped from that royalty before new royalty cash is due; it is not silently charged against all retail sales. Acceptance needs craft 60 and delivery by period 9. The studio retains design rights in this sample agreement; other rights terms are not simulated.</li>
+    <li>Finite customer pools are split between two preference groups. Availability, channel reach, audience fit, price, reliability, and competing offers affect buying; waiting remains an option. Critics affect discovery modestly and never directly set sales or audience approval.</li>
+    <li>The rival funds work and develops through finite people and equipment before entering the same customer pool. Its hardware needs prepaid batches with the same minimum order and lead time; its collections and care also continue after release. Rival AI and further releases are omitted. The first opening has no fictional consumer market.</li>
+    <li>Forecast bands are sensitivity illustrations (80–120% of current expected demand), not statistical confidence intervals. Actual sample outcomes are deterministic; the downside action halves reachable buyers. A future game should expose estimates rather than this demo's full internal figures.</li>
+    <li>Internal assembly costs 30 to set up and 4 per unit, uses 2 people and 2 equipment slots, and makes 2 units per period. A contractor charges 7 per unit prepaid, minimum 10, with a 2-period lead time. Goods remain owned by the studio; sales are limited by available units and cash arrives one period later.</li>
+    <li>Hardware sales create repair work (one job per ten units sold, rounded up per period), and installed machines accumulate further care needs at 0.04 jobs per unit per period. A job costs 1 cash and 0.5 person-time. These coarse rates are invented. Stopping production preserves support duties; abandoning support keeps them visible and harms user trust. Support lifetimes and terminal states are not selected.</li>
+    <li>The hardware studio delegates platform operation initially. Retaining it costs 5 per period and 1 person-time, separately from repairs. Third parties need tools, capacity, and attractive terms; investing once does not grant a free launch catalogue. One simplified developer with finite work and funds stands in for participation. Its actually released game adds 10 points of hardware usefulness to each audience; this magnitude is uncalibrated.</li>
+    <li>No loans, interest, tax, inflation, historical calibration, detailed skills, factory-floor simulation, general electronics, implementation architecture, or campaign scoring. This is not a balance recommendation.</li>
+  </ul>
+</details>
+<script>
+// The pure model owns no page elements. The shell below renders its state.
+const Economy = (() => {
+  const clone = x => structuredClone(x);
+  const label = { demo: 'Opening demonstration', game: 'Later game release', hardware: 'Hardware launch' };
+  function initial(kind) {
+    return { kind, t: 0, cash: kind === 'demo' ? 60 : kind === 'game' ? 170 : 400,
+      people: kind === 'demo' ? 1 : 4, equipment: kind === 'demo' ? 1 : 3,
+      fixed: kind === 'demo' ? 6 : 17, spent: 0, received: 0, due: [], ledger: [], log: ['Choose funding and commitments before advancing work.'],
+      project: { status: 'development', work: 0, need: kind === 'demo' ? 4 : 20, craft: 70, reliability: 55, milestone: false },
+      contract: null, advance: 0, recoup: 0, price: kind === 'hardware' ? 12 : 2,
+      next: false, nextWork: 0, support: true, backlog: 0, wear: 0, userTrust: 100, stock: 0, installed: 0, sold: 0,
+      production: null, order: null, internalSetup: false, platform: false, tools: false,
+      developer: { status: 'not approached', work: 0, cash: 30 }, licensing: 'open',
+      audience: null, critic: null, attention: 0, offers: 0, demandScale: 1,
+      pools: kind === 'game' ? [100,180] : [40,70],
+      rival: { work: 0, need: 9, cash: kind === 'hardware' ? 200 : 90, people: 3, equipment: 3, launched: false, sold: 0, stock: 0, order: null, due: 0, backlog: 0, wear: 0, trust: 100 },
+      last: { development: 0, assembly: 0, support: 0, platform: 0, next: 0, demand: 0, missed: 0, rival: 0 }, review: null };
+  }
+  function message(s, text) { s.log.unshift(`Period ${s.t}: ${text}`); }
+  function pay(s, value, reason) { s.cash -= value; s.spent += value; s.ledger.push({ t: s.t, reason, out: value, in: 0, cash: s.cash }); }
+  function receive(s, value, reason) { s.cash += value; s.received += value; s.ledger.push({ t: s.t, reason, out: 0, in: value, cash: s.cash }); }
+  function queue(s, value, reason) { if (value > 0) s.due.push({ t: s.t + 1, value, reason }); }
+  function interests(s) { return s.kind === 'hardware' ? (s.developer.status === 'released' ? [95,65] : [85,55]) : [85,40]; }
+  function demand(s) {
+    const fit = interests(s), reach = s.contract === 'publisher' ? .85 : .55;
+    const discovery = s.critic ? 1 + (s.critic - 50) / 250 : 1;
+    const priceFit = Math.min(1.5, (s.kind === 'hardware' ? 12 : 2) / s.price);
+    const rivalScore = s.rival.launched ? .95 * .8 * .85 * (s.rival.trust / 100) : 0;
+    return s.pools.map((remaining,i) => {
+      const utility = (fit[i] / 100) * (s.project.craft / 100) * (s.project.reliability / 100) * (s.userTrust / 100) * priceFit;
+      const reachable = remaining * .35 * reach * discovery * s.demandScale;
+      return { remaining, fit: fit[i], reachable, utility, rivalScore, ours: Math.floor(reachable * utility / (utility + rivalScore + .3)), rival: Math.floor(reachable * rivalScore / (utility + rivalScore + .3)) };
+    });
+  }
+  function reception(s) {
+    s.audience = interests(s).map(fit => Math.round(.6 * fit + .25 * s.project.craft + .15 * s.project.reliability));
+    s.critic = Math.round(.7 * 90 + .2 * s.project.craft + .1 * s.project.reliability);
+    s.attention = Math.round((s.audience[0] + s.critic) / 2);
+  }
+  function step(input, action) {
+    const s = clone(input), p = s.project;
+    const reject = text => { message(s, text); return s; };
+    if (action === 'commission') {
+      if (s.kind !== 'demo' || s.contract || p.work || p.status !== 'development') return reject('A commission can only be signed before this demonstration starts.');
+      s.contract = 'commission'; s.deadline = 6; s.finalPayment = 40; s.advance = 25; receive(s,25,'Commission signing payment'); message(s,'Client funds the demonstration; acceptance, deadline, and retained support are contractual obligations.');
+    } else if (action === 'publisher') {
+      if (s.kind !== 'game' || s.contract || p.status !== 'development') return reject('A publishing agreement is unavailable here.');
+      s.contract = 'publisher'; s.deadline = 9; s.recoup = 60; receive(s,60,'Publisher advance'); message(s,'Advance received. Studio royalty 0.8/unit first recoups 60; wider channel reach is agreed.');
+    } else if (action === 'polish') {
+      if (p.status !== 'development') return reject('Development has ended; this example does not model a new revision project.');
+      p.need += s.kind === 'demo' ? 2 : 5; p.craft = Math.min(100,p.craft+10); p.reliability = Math.min(100,p.reliability+20); message(s,'Better projected craft and reliability require additional development work; they are realized only on completion.');
+    } else if (action === 'cut') {
+      if (p.status !== 'development') return reject('There is no active development scope to cut.');
+      if (s.contract) return reject('The agreed scope cannot be changed unilaterally. Renegotiate the commission, or meet the publishing agreement.');
+      p.need = Math.max(p.work,p.need - (s.kind === 'demo' ? 1 : 4)); p.craft = Math.max(20,p.craft-10); message(s,'Less work remains; a smaller output sacrifices craft. Audience preferences stay separate.');
+    } else if (action === 'renegotiate') {
+      if (s.contract !== 'commission' || s.renegotiated || p.status !== 'development') return reject('This sample client offers one renegotiation during development.');
+      s.renegotiated = true; s.deadline += 2; s.finalPayment -= 10; p.need = Math.max(p.work,p.need-1); message(s,'Client accepts a smaller scope and later deadline in exchange for 10 less final payment.');
+    } else if (action === 'deliver') {
+      if (p.status !== 'development' || p.work < p.need) return reject('Finish the committed work before delivering; cut scope at a review if appropriate.');
+      if (s.contract === 'commission' && (p.reliability < 60 || s.t > s.deadline)) return reject('Client does not accept: reliability must be at least 60 and the deadline must be met. Renegotiation or cancellation remain choices.');
+      if (s.contract === 'publisher' && (p.craft < 60 || s.t > s.deadline)) return reject('The publishing agreement requires craft 60 and delivery by period 9. No unchosen penalty is imposed.');
+      p.status = 'released'; s.releasedAt = s.t; reception(s);
+      if (s.kind === 'demo') {
+        if (s.contract === 'commission') { queue(s,s.finalPayment,'Client acceptance payment'); message(s,`Client accepts; ${s.finalPayment} is due next period. Visitors and critics can respond differently.`); }
+        else { s.offers = s.attention >= 60 ? 2 : 0; message(s,`Demonstrated without sales. ${s.offers} possible future enquiries appear; none is booked revenue.`); }
+      } else message(s,'Output released. Customer reception, cash collection, competition, and ongoing obligations now outlive development.');
+    } else if (action === 'cancel') {
+      if (p.status !== 'development') return reject('Released outputs are discontinued, rather than cancelling their finished development.');
+      if (s.contract === 'commission') pay(s, p.milestone ? 15 : 25,'Return unearned commission funding');
+      if (s.contract === 'publisher') pay(s,s.recoup,'Return publisher advance under sample cancellation terms');
+      p.status = 'cancelled'; message(s,'Development cancelled; spent time and costs remain sunk. This sample agreement determines the refund.');
+    } else if (action === 'next') {
+      s.next = !s.next; message(s,s.next ? `A next project requests ${s.kind === 'hardware' ? 2 : 1} person-time and equipment slots each period, limited by what is available.` : 'The next project is paused; wages and facility costs continue.');
+    } else if (action === 'internal') {
+      if (s.kind !== 'hardware' || p.status !== 'released') return reject('Release the hardware design before starting this assembly example.');
+      if (!s.internalSetup) { if(s.cash<30) return reject('Assembly setup needs 30 available cash.'); pay(s,30,'Internal assembly setup'); s.internalSetup = true; }
+      s.production = 'internal'; message(s,'Internal assembly requests two people and two equipment slots; small batches tie up less cash.');
+    } else if (action === 'external') {
+      if (s.kind !== 'hardware' || p.status !== 'released' || s.order) return reject('An external order needs a released design and no outstanding order.');
+      if (s.cash < 70) return reject('The minimum contracted batch needs 70 cash upfront.');
+      pay(s,70,'Contract manufacturer: 10 units prepaid'); s.order = { t: s.t + 2, units: 10 }; s.production = null; message(s,'10 contracted units arrive in two periods. Development capacity is free; cash and supplier lead time are committed.');
+    } else if (action === 'stop') {
+      s.production = null; message(s,'Further internal production stopped. Existing orders, units, and support commitments remain.');
+    } else if (action === 'support') {
+      s.support = !s.support; message(s,s.support ? 'Repair care resumed; the backlog still needs capacity and cash.' : 'Repair care withdrawn; obligations remain visible, and unresolved users lose trust.');
+    } else if (action === 'platform') {
+      if (s.kind !== 'hardware') return reject('This comparison only offers platform operation for the hardware studio.');
+      s.platform = !s.platform; message(s,s.platform ? 'Studio retains platform operation: one person-time plus 5 cash per period, separately from repairs.' : 'Platform operation is delegated under the assumed agreement; third-party work is suspended if access is no longer maintained.');
+    } else if (action === 'tools') {
+      if (!s.platform || s.tools || s.cash < 15) return reject('Developer tools require retained platform operation and a one-off 15 cash investment.');
+      pay(s,15,'Developer tools and invitation'); s.tools = true; s.developer.status = s.licensing === 'open' && s.userTrust >= 70 ? 'developing' : 'declined'; message(s,`Independent developer ${s.developer.status}; good terms and trust influence participation, not an automatic catalogue.`);
+    } else if (action === 'terms') {
+      s.licensing = s.licensing === 'open' ? 'restrictive' : 'open'; message(s,`Third-party terms now ${s.licensing}. Existing participation may stop if terms are unattractive.`);
+    } else if (action === 'price') {
+      s.price = s.price === (s.kind === 'hardware' ? 12 : 2) ? (s.kind === 'hardware' ? 18 : 3) : (s.kind === 'hardware' ? 12 : 2); message(s,'Price changes revenue per unit and willingness to buy independently of critical reception.');
+    } else if (action === 'downside') {
+      s.demandScale = s.demandScale === 1 ? .5 : 1; message(s,`Market sensitivity case: reachable buyers ${s.demandScale === 1 ? 'restored' : 'halved'}. This is a visible experiment, not a random hidden penalty.`);
+    } else if (action === 'tick') {
+      if (s.review) return reject('Cash cannot cover the next fixed costs. Reconsider commitments; this prototype does not select a recovery rule.');
+      const incoming = s.due.filter(x=>x.t<=s.t+1).reduce((a,x)=>a+x.value,0);
+      const fixed = s.fixed + (s.platform ? 5 : 0);
+      if(s.cash+incoming < fixed) { s.review = 'Insufficient cash for the next period'; return reject('Automatic cash review: cannot pay fixed costs, even after due collections. Profit expectations and unpaid invoices are not spendable cash.'); }
+      s.t++; s.last = { development: 0, assembly: 0, support: 0, platform: 0, next: 0, demand: 0, missed: 0, rival: 0 };
+      for (const invoice of s.due.filter(x=>x.t<=s.t)) receive(s,invoice.value,invoice.reason);
+      s.due=s.due.filter(x=>x.t>s.t); pay(s,fixed,'People, facilities' + (s.platform ? ', platform operation' : ''));
+      if (s.order && s.order.t <= s.t) { s.stock += s.order.units; message(s,`${s.order.units} contracted units arrive; ownership is separate from who made them.`); s.order = null; }
+      let people = s.people, equipment = s.equipment;
+      if (s.platform) { s.last.platform=1; people--; }
+      if (s.kind === 'hardware') { s.wear+=s.installed*.04; const jobs=Math.floor(s.wear); s.backlog+=jobs; s.wear-=jobs; }
+      if (s.support && s.backlog) {
+        const repaired = Math.min(s.backlog,Math.floor(people*2),Math.floor(s.cash));
+        s.backlog -= repaired; people -= repaired*.5; s.last.support = repaired*.5; if(repaired) pay(s,repaired,'Repairs / game support');
+      }
+      if (s.backlog) { s.userTrust=Math.max(20,s.userTrust-5); message(s,`${s.backlog} unresolved support jobs; user trust falls independently of launch reviews.`); }
+      if (s.production === 'internal') {
+        const units = Math.min(2,Math.floor(people),Math.floor(equipment),Math.floor(s.cash/4));
+        if(units) { pay(s,units*4,'Assembly components'); s.stock+=units; people-=units; equipment-=units; s.last.assembly=units; }
+      }
+      if (s.next) { const work=Math.min(s.kind==='hardware'?2:1,people,equipment); s.nextWork+=work; people-=work; equipment-=work; s.last.next=work; }
+      if (p.status === 'development') { s.last.development = Math.min(people,equipment,p.need-p.work); p.work += s.last.development; }
+      if (s.contract === 'commission' && !p.milestone && p.work >= p.need/2) { p.milestone=true; receive(s,15,'Accepted commission milestone'); message(s,'Milestone accepted: 15 paid. Final acceptance is a separate obligation.'); }
+      if (s.kind !== 'demo') {
+        const r=s.rival;
+        r.cash+=r.due; r.due=0;
+        if(s.kind==='hardware') { r.wear+=r.sold*.04; const jobs=Math.floor(r.wear); r.backlog+=jobs; r.wear-=jobs; }
+        if(r.order && r.order.t<=s.t) { r.stock+=r.order.units; r.order=null; }
+        let rivalPeople=r.people;
+        if(r.cash>=14) {
+          r.cash-=14;
+          const repaired=Math.min(r.backlog,Math.floor(rivalPeople*2),Math.floor(r.cash)); r.backlog-=repaired; r.cash-=repaired; rivalPeople-=repaired*.5;
+          if(!r.launched) { r.work+=Math.min(rivalPeople,r.equipment,r.need-r.work); if(r.work>=r.need) { r.launched=true; message(s,'Rival releases a smaller design after funding its own finite development work. It competes for the same buyers.'); } }
+          if(s.kind==='hardware' && r.launched && !r.order && r.stock<3 && r.cash>=70) { r.cash-=70; r.order={t:s.t+2,units:10}; }
+        }
+        if(r.backlog) r.trust=Math.max(20,r.trust-5);
+        const forecast=demand(s);
+        const launched=p.status==='released';
+        // The rival faces its own reachable pool before we release; waiting remains possible.
+        const choices=launched ? forecast : s.pools.map(remaining=>({ours:0,rival:r.launched ? Math.floor(remaining*.35*.55*.646/(.646+.3)) : 0}));
+        let wanted=0, sold=0, rivals=0;
+        choices.forEach((d,i)=>{
+          const requested=launched ? d.ours : 0; wanted+=requested;
+          const units=s.kind==='hardware' ? Math.min(requested,s.stock) : requested;
+          if(s.kind==='hardware') s.stock-=units;
+          const rivalUnits=s.kind==='hardware'?Math.min(d.rival,r.stock):d.rival;
+          if(s.kind==='hardware') r.stock-=rivalUnits;
+          s.pools[i]=Math.max(0,s.pools[i]-units-rivalUnits); sold+=units; rivals+=rivalUnits;
+        });
+        s.last.demand=wanted; s.last.missed=wanted-sold; s.last.rival=rivals; s.sold+=sold; r.sold+=rivals;
+        if(rivals) { r.due=rivals*(s.kind==='hardware'?12:2)*.8; r.backlog+=Math.ceil(rivals/(s.kind==='hardware'?10:40)); }
+        if(sold) {
+          let owed=sold*s.price*(s.contract==='publisher' ? .4 : .8);
+          if(s.contract==='publisher') { const recoup=Math.min(s.recoup,owed); s.recoup-=recoup; owed-=recoup; }
+          queue(s,owed,'Collected sales / studio royalties'); s.backlog+=Math.ceil(sold/(s.kind==='hardware'?10:40)); s.installed+=s.kind==='hardware'?sold:0;
+          message(s,`${sold} units sold; ${owed.toFixed(1)} due next period${s.contract==='publisher'?`, ${s.recoup.toFixed(1)} advance still to recoup`:''}. ${s.last.missed} wanted units unavailable.`);
+        }
+        if(s.developer.status==='developing') {
+          if(!s.platform || s.licensing!=='open' || s.userTrust<70) { s.developer.status='withdrawn'; message(s,'Third party withdraws: continuing access, terms, or user trust no longer justify its commitment.'); }
+          else if(s.developer.cash>=3) { s.developer.cash-=3; s.developer.work++; if(s.developer.work>=3) { s.developer.status='released'; message(s,'Third party releases after three funded work periods. An available catalogue improves hardware usefulness to both audiences; sales still need buyers, units, and a competitive offer.'); } }
+        }
+      }
+      message(s,`Work this period: development ${s.last.development}, assembly ${s.last.assembly}, care ${s.last.support}, platform ${s.last.platform}, next project ${s.last.next}; unused people ${people-s.last.development}.`);
+      if(p.status==='development' && p.work>=p.need) message(s,'Development milestone: ready for a delivery review.');
+    }
+    // A funding action can clear a cash review; time still waits for the player.
+    if(s.review && s.cash+s.due.filter(x=>x.t<=s.t+1).reduce((a,x)=>a+x.value,0)>=s.fixed+(s.platform?5:0)) s.review=null;
+    return s;
+  }
+  return { initial, step, demand, label };
+})();
+</script>
+<script>
+const walks = {
+  demo: [
+    { name: 'Commission: acceptance is not acclaim', intro: 'Take funding, finish an unreliable machine, then try to collect. Improve and renegotiate to meet acceptance without pretending visitors determine client payment.', steps: ['commission','tick','tick','tick','tick','deliver','polish','renegotiate','tick','deliver','tick'] },
+    { name: 'Self-funded: attention is not cash', intro: 'Improve the demonstration, fund six periods, and exhibit. Look at remaining cash and future enquiries; no consumers buy this one-off exhibition.', steps: ['polish','tick','tick','tick','tick','tick','tick','deliver','next','tick'] },
+    { name: 'Cancel: agreement determines the refund', intro: 'Take a commission, do one period of work, and cancel. Unspent cash, sunk costs, and funding obligations differ.', steps: ['commission','tick','cancel'] }
+  ],
+  game: [
+    { name: 'Self-publish: loved by some, missed by others', intro: 'Release into a finite audience after a rival launches. Read two audience responses beside the critic score. Start another project before all sales cash arrives.', steps: ['tick','tick','tick','tick','tick','tick','tick','deliver','next','tick','tick','price','tick'] },
+    { name: 'Publisher: advance is not extra royalty', intro: 'Use an advance and wider reach. Royalties first recoup the advance; sales can happen while no new royalty cash arrives.', steps: ['publisher','tick','tick','tick','tick','tick','tick','tick','deliver','tick','tick','tick'] },
+    { name: 'Split capacity: a deadline becomes fragile', intro: 'Fund through a publisher and overlap development with another project. The next project uses real people and equipment; a deadline can be missed.', steps: ['publisher','next','tick','tick','tick','tick','tick','tick','tick','tick','tick','tick','deliver'] }
+  ],
+  hardware: [
+    { name: 'Internal: lower unit cost, scarce capacity', intro: 'Release the design, assemble small batches, and begin another project. Production and repairs share the studio’s finite resources.', steps: ['tick','tick','tick','tick','tick','tick','tick','deliver','internal','next','tick','tick','tick','stop','tick'] },
+    { name: 'Contracted: committed cash and lead time', intro: 'Compare prepaid manufacturing with freed development capacity. Sell after delivery, while cash collection and support continue.', steps: ['tick','tick','tick','tick','tick','tick','tick','deliver','external','next','tick','tick','tick','downside','external','tick','tick'] },
+    { name: 'Support and third parties survive launch', intro: 'Retain platform operation, invite a developer, and sell a manufactured batch. Withdraw product care and change licensing; obligations and independent participation remain visible.', steps: ['tick','tick','tick','tick','tick','tick','tick','deliver','platform','tools','external','tick','tick','support','terms','tick','tick'] }
+  ]
+};
+let kind='demo', state=Economy.initial(kind), activeWalk=0, guidedStep=0;
+const $=id=>document.getElementById(id), cash=n=>Number(n).toFixed(1), pair=(name,value)=>`<dt>${name}</dt><dd>${value}</dd>`;
+const captions={ demo:'1950-style exhibition context: borrowed machines, finite inventor time, a client or personal funds. No consumer game market is assumed.',game:'Later compatible platform and distribution context: finite customer groups, a publisher or self-publishing, and a competing studio.',hardware:'Later hardware context: a finished design needs manufactured units. Product care and optional platform operation are separate ongoing commitments.' };
+const actionNames={tick:'Advance one period',commission:'Sign commission',publisher:'Take publisher advance',polish:'Invest more development work',cut:'Cut own scope',renegotiate:'Renegotiate commission',deliver:'Deliver / release',cancel:'Cancel development',next:'Toggle next project',internal:'Start internal assembly',external:'Order 10 contracted units',stop:'Stop internal production',support:'Toggle product / game care',platform:'Toggle platform operation',tools:'Fund developer tools',terms:'Change third-party terms',price:'Change price',downside:'Toggle demand downside'};
+function act(action) { state=Economy.step(state,action); render(); }
+function reset(newKind=kind) { kind=newKind; state=Economy.initial(kind); guidedStep=0; render(); }
+function render() {
+  const s=state,p=s.project,w=walks[kind][activeWalk],due=s.due.reduce((a,x)=>a+x.value,0);
+  $('tabs').innerHTML=Object.entries(Economy.label).map(([key,name])=>`<button role="tab" aria-selected="${key===kind}" data-kind="${key}">${name}</button>`).join('');
+  $('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{activeWalk=0;reset(b.dataset.kind)});
+  $('scenario').textContent=captions[kind]; $('walkthrough').innerHTML=walks[kind].map((x,i)=>`<option value="${i}" ${i===activeWalk?'selected':''}>${x.name}</option>`).join('');
+  $('guide').textContent=`${w.intro} Guided step ${Math.min(guidedStep+1,w.steps.length)} / ${w.steps.length}: ${guidedStep<w.steps.length?actionNames[w.steps[guidedStep]]:'Finished; use free play or restart.'}`;
+  $('next').disabled=guidedStep>=w.steps.length; $('notice').textContent=s.review || s.log[0]; $('notice').className=s.review?'warning':'';
+  const available=Math.max(0,s.cash+due-(s.fixed+(s.platform?5:0)));
+  $('state').innerHTML=`<div class="card"><h2>Studio · period ${s.t}</h2><dl>${pair('Spendable cash',cash(s.cash))}${pair('Due collections, not cash',cash(due))}${pair('Cash received / spent',cash(s.received)+' / '+cash(s.spent))}${pair('Fixed costs next period',cash(s.fixed+(s.platform?5:0)))}${pair('People / equipment throughput',s.people+' / '+s.equipment)}${pair('Funding agreement',s.contract||'Self-funded')}${s.contract?pair('Deadline / unrecouped advance',(s.deadline||'—')+' / '+cash(s.recoup)):''}</dl></div>
+  <div class="card"><h2>Development and next work</h2><dl>${pair('Current undertaking',p.status)}${pair('Committed work complete',p.work+' / '+p.need)}${pair('Projected craft / reliability',p.craft+' / '+p.reliability)}${pair('Next project work',s.nextWork+(s.next?' · active':' · paused'))}${pair('Last capacity use',`Development ${s.last.development}; assembly ${s.last.assembly}; care ${s.last.support}; platform ${s.last.platform}; next ${s.last.next}`)}${pair('Rival work / cash',s.rival.work+' / '+cash(s.rival.cash))}${pair('Rival output',kind==='demo'?'No consumer market':s.rival.launched?'Released':'In development')}</dl></div>
+  <div class="card"><h2>Output and commitments</h2><dl>${pair('Studio units sold / rival units',s.sold+' / '+s.rival.sold)}${pair('Stock / installed hardware',s.stock+' / '+s.installed)}${pair('Manufacturing',s.production||'No internal run')}${pair('Contracted batch',s.order?`${s.order.units} units due period ${s.order.t}`:'None pending')}${pair('Support backlog / user trust',s.backlog+' / '+s.userTrust)}${pair('Care responsibility',s.support?'Studio providing care':'Care withdrawn; obligation remains')}${pair('Platform responsibility',s.platform?'Studio operating':'Delegated / external operator')}${pair('Third-party output',s.developer.status+' · work '+s.developer.work+' / 3')}${pair('Exhibition enquiries',s.offers+' potential; no booked revenue')}</dl></div>`;
+  const actions=['tick',...(kind==='demo'?['commission','renegotiate']:kind==='game'?['publisher']:[]),'polish','cut','deliver','cancel','next',...(kind==='hardware'?['internal','external','stop','platform','tools','terms']:[]),...(kind!=='demo'?['support','price','downside']:[])];
+  $('actions').innerHTML=actions.map(a=>`<button data-action="${a}" ${a==='tick'?'class="primary"':''}>${actionNames[a]}</button>`).join(''); $('actions').querySelectorAll('button').forEach(b=>b.onclick=()=>act(b.dataset.action));
+  if(kind==='demo') $('market').innerHTML=`<p>Visitors: ${s.audience?s.audience[0]+' / 100':'not yet observed'} · Critics: ${s.critic??'not yet observed'} · Attention: ${s.attention}. Exhibition attendance creates no consumer unit sales. Client acceptance follows the agreement, independently of public reception.</p>`;
+  else {
+    const ds=Economy.demand(s),total=ds.reduce((a,x)=>a+x.ours,0);
+    $('market').innerHTML=`<p>Critics: ${s.critic??'not yet observed'} · Core audience: ${s.audience?s.audience[0]:'not yet observed'} · Broader audience: ${s.audience?s.audience[1]:'not yet observed'} · Price: ${s.price}. Reception values are out of 100.</p><p>Current demand illustration: <strong>${Math.floor(total*.8)}–${Math.ceil(total*1.2)} units / period</strong>${p.status!=='released'?' if released now':''}; last observed demand ${s.last.demand}, unmet for lack of units ${s.last.missed}. Cash reserve after fixed costs and all due collections: ${cash(available)}.</p><div class="scroll"><table><thead><tr><th>Preference group</th><th>Remaining potential buyers</th><th>Audience fit</th><th>Reachable now</th><th>Offer appeal</th><th>Rival appeal</th><th>Expected studio / rival</th></tr></thead><tbody>${ds.map((d,i)=>`<tr><td>${i?'Broader':'Core'}</td><td>${d.remaining}</td><td>${d.fit}</td><td>${cash(d.reachable)}</td><td>${cash(d.utility)}</td><td>${cash(d.rivalScore)}</td><td>${d.ours} / ${d.rival}</td></tr>`).join('')}</tbody></table></div><p class="note">Appeal combines fit, craft, reliability, user trust, and price. Reach combines channel access, critic discovery, and the selected demand case. Waiting has appeal 0.3. An unavailable hardware unit is not a sale; its interested buyer remains in the pool. An actually released third-party catalogue improves hardware usefulness; an invitation alone does not.</p>`;
+  }
+  $('ledger').innerHTML=s.ledger.length?`<table><thead><tr><th>Period</th><th>Reason</th><th>Paid</th><th>Received</th><th>Cash after movement</th></tr></thead><tbody>${s.ledger.slice().reverse().map(x=>`<tr><td>${x.t}</td><td>${x.reason}</td><td>${cash(x.out)}</td><td>${cash(x.in)}</td><td>${cash(x.cash)}</td></tr>`).join('')}</tbody></table>`:'No cash movements yet.';
+  $('log').innerHTML=s.log.slice(0,30).map(text=>`<p>${text}</p>`).join('');
+}
+$('walkthrough').onchange=e=>{activeWalk=Number(e.target.value);reset()}; $('start').onclick=()=>reset(); $('next').onclick=()=>{const action=walks[kind][activeWalk].steps[guidedStep++];if(action)act(action)};
+render();
+</script>
+</html>
