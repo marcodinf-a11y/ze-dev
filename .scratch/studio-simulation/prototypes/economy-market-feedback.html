@@ -22,6 +22,17 @@
   <p class="note">All figures are invented cash units and work units. Each “period” samples continuous time; it is not a chosen calendar scale. Scenarios are isolated studios, not a campaign timeline. Numbers, formulas, and deterministic outcomes are discussion props, not approved game rules.</p>
 </header>
 <section>
+  <h2>Compare three ways to show uncertainty</h2>
+  <p>This separate, invented example uses the same launch in all three views. You must decide whether to commit to another project before the first sales report arrives.</p>
+  <button id="reveal">Show the first sales report</button><button id="hide-report">Return to before launch</button>
+  <div class="grid">
+    <div class="card"><h3>1. Forecast ranges</h3><p>Expect <strong>8–14 sales</strong> in the first period. At 1.6 cash per sale, that would mean 12.8–22.4 collected next period.</p><p class="note">Specialist interest looks promising. Channel reach and the rival's launch are uncertain. Test whether your plan survives the low estimate.</p><p class="uncertainty-result" hidden><strong>Actual: 6 sales; 9.6 cash due next period.</strong> The rival released sooner than expected and reached more of the overlapping audience. The forecast missed its range; update it and reassess the commitment.</p></div>
+    <div class="card"><h3>2. Exact forecasts</h3><p>Expect <strong>11 sales</strong> in the first period and 17.6 collected next period.</p><p class="note">Easy to calculate a budget. A single number can either be a dependable promise in a deterministic game or an estimate that players may mistake for one.</p><p class="uncertainty-result" hidden><strong>Actual: 6 sales; 9.6 cash due next period.</strong> If 11 was promised, this result breaks the promise. If 11 was only an estimate, its uncertainty needed clearer presentation.</p></div>
+    <div class="card"><h3>3. Mostly uncertain</h3><p><strong>Encouraging specialist interest.</strong> Broad appeal is unclear, and a rival may launch soon. No numerical sales estimate.</p><p class="note">You rely on research, experience, and cash reserves. Discovery can be satisfying, but comparing the risk of two expensive commitments is harder.</p><p class="uncertainty-result" hidden><strong>Actual: 6 sales; 9.6 cash due next period.</strong> The rival launched early and won more of the overlapping audience. This teaches you something, but gave little guidance on an affordable commitment.</p></div>
+  </div>
+  <p class="note">A range is an estimate, not a guarantee. This vignette illustrates forecast error; the economic walkthrough below uses deterministic sensitivity bands, not a calibrated forecasting system.</p>
+</section>
+<section>
   <h2>Choose a comparison</h2>
   <div role="tablist" aria-label="Economic scenarios" id="tabs"></div>
   <p id="scenario"></p>
@@ -251,6 +262,8 @@ const walks = {
 };
 let kind='demo', state=Economy.initial(kind), activeWalk=0, guidedStep=0;
 const $=id=>document.getElementById(id), cash=n=>Number(n).toFixed(1), pair=(name,value)=>`<dt>${name}</dt><dd>${value}</dd>`;
+$('reveal').onclick=()=>document.querySelectorAll('.uncertainty-result').forEach(p=>p.hidden=false);
+$('hide-report').onclick=()=>document.querySelectorAll('.uncertainty-result').forEach(p=>p.hidden=true);
 const captions={ demo:'1950-style exhibition context: borrowed machines, finite inventor time, a client or personal funds. No consumer game market is assumed.',game:'Later compatible platform and distribution context: finite customer groups, a publisher or self-publishing, and a competing studio.',hardware:'Later hardware context: a finished design needs manufactured units. Product care and optional platform operation are separate ongoing commitments.' };
 const actionNames={tick:'Advance one period',commission:'Sign commission',publisher:'Take publisher advance',polish:'Invest more development work',cut:'Cut own scope',renegotiate:'Renegotiate commission',deliver:'Deliver / release',cancel:'Cancel development',next:'Toggle next project',internal:'Start internal assembly',external:'Order 10 contracted units',stop:'Stop internal production',support:'Toggle product / game care',platform:'Toggle platform operation',tools:'Fund developer tools',terms:'Change third-party terms',price:'Change price',downside:'Toggle demand downside'};
 function act(action) { state=Economy.step(state,action); render(); }
