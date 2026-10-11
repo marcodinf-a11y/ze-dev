@@ -29,10 +29,10 @@
   <button id="reveal">Show the first sales report</button><button id="hide-report">Return to before launch</button>
   <div class="grid">
     <div class="card"><h3>Normal · Forecast ranges</h3><p id="normal-forecast"></p><p class="note">Research can reveal an overlooked competitor and revise the estimate as well as narrow it. An estimate is not a guarantee.</p><p class="uncertainty-result" hidden><strong>Actual: 6 sales; 9.6 cash due next period.</strong> The rival released early and reached more of the overlapping audience. Without research, this result misses the original range.</p></div>
-    <div class="card"><h3>Easy · Exact forecasts</h3><p>Forecast: <strong>6 sales</strong> and 9.6 collected next period in this unchanged example.</p><p class="note">Market research cannot make this already exact forecast more precise. How exact forecasts respond to changed commitments remains to discuss.</p><p class="uncertainty-result" hidden><strong>Actual: 6 sales; 9.6 cash due next period.</strong> The forecast already exposed this outcome; the rival still affects actual demand.</p></div>
+    <div class="card"><h3>Easy · Exact forecasts</h3><p>Forecast: <strong>6 sales</strong> and 9.6 collected next period in this unchanged example.</p><p class="note">Market research cannot make this already exact forecast more precise. Forecasts are conditional on the current plan and update when commitments change.</p><p class="uncertainty-result" hidden><strong>Actual: 6 sales; 9.6 cash due next period.</strong> The forecast already exposed this outcome; the rival still affects actual demand.</p></div>
     <div class="card"><h3>Hard · Mostly uncertain</h3><p id="hard-forecast"></p><p class="note">Research builds understanding from qualitative signals toward more useful estimates. The illustrated stages are proposals, not selected progression rules.</p><p class="uncertainty-result" hidden><strong>Actual: 6 sales; 9.6 cash due next period.</strong> The rival launched early and won more of the overlapping audience. Research could have helped judge the commitment beforehand.</p></div>
   </div>
-  <p class="note">This vignette changes only information, keeping the actual market outcome constant. Whether difficulty also changes economic balance remains unselected. Research costs, duration, and improvement rates are not simulated here. The economic walkthrough below exposes full state for inspecting the model.</p>
+  <p class="note">This vignette changes only information, keeping the actual market outcome constant. Agreed: research consumes cash and staff time, and findings can become outdated. These costs and durations are not simulated in this presentation vignette; improvement rates remain provisional. Whether difficulty also changes economic balance remains unselected. The economic walkthrough below exposes full state for inspecting the model.</p>
 </section>
 <section>
   <h2>Choose a comparison</h2>
@@ -268,7 +268,7 @@ let researchStage=0, reportShown=false;
 function renderForecastComparison() {
   $('normal-forecast').innerHTML=['Expect <strong>8–14 sales</strong>; 12.8–22.4 cash due next period. Rival timing is uncertain.','Research indicates an earlier rival launch. Revised estimate: <strong>5–9 sales</strong>; 8.0–14.4 cash due next period.','Deeper research refines audience overlap: <strong>5–8 sales</strong>; 8.0–12.8 cash due next period.'][researchStage];
   $('hard-forecast').innerHTML=['<strong>Encouraging specialist interest.</strong> Broad appeal and rival timing are unclear. No numerical estimate.','Research identifies audience overlap and a rival approaching launch: <strong>3–10 sales</strong>; 4.8–16.0 cash due next period.','Deeper research refines reachable buyers: <strong>5–8 sales</strong>; 8.0–12.8 cash due next period.'][researchStage];
-  $('research-status').textContent=`Illustrated research stage ${researchStage} / 2. Improvement paths are provisional; research costs and duration are still to decide.`;
+  $('research-status').textContent=`Illustrated research stage ${researchStage} / 2. Research uses cash and staff time; numeric costs, durations, and improvement paths remain provisional.`;
   $('research').disabled=researchStage===2 || reportShown;
   document.querySelectorAll('.uncertainty-result').forEach(p=>p.hidden=!reportShown);
 }
